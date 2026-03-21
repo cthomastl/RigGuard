@@ -37,7 +37,7 @@ router.get("/summary", async (_req: AuthRequest, res: Response): Promise<void> =
   );
 
   const recentAlerts = await Alert.findAll({
-    where: { createdAt: { [Op.gte]: last7Days } },
+    where: { createdAt: { [Op.gte]: last7Days } } as any,
     include: [{ model: Equipment, as: "equipment", attributes: ["id", "name"] }],
     order: [["createdAt", "DESC"]],
     limit: 10,
@@ -80,7 +80,7 @@ router.get("/equipment-health-trend", async (_req: AuthRequest, res: Response): 
     day.setDate(day.getDate() - i);
     const nextDay = new Date(day.getTime() + 86400000);
     const anomalies = await SensorReading.count({ where: { anomaly: true, recordedAt: { [Op.between]: [day, nextDay] } } });
-    const alerts = await Alert.count({ where: { createdAt: { [Op.between]: [day, nextDay] } } });
+    const alerts = await Alert.count({ where: { createdAt: { [Op.between]: [day, nextDay] } } as any });
     result.push({ date: day.toISOString().slice(0, 10), anomalies, alerts });
   }
   res.json(result);
