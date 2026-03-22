@@ -1,0 +1,53 @@
+# NOTE: VITE_API_URL and VITE_PREDICTION_URL are baked in at build time.
+# Build the image with:
+#   docker build \
+#     --build-arg VITE_API_URL=https://<your-alb-hostname> \
+#     --build-arg VITE_PREDICTION_URL=https://<your-alb-hostname> \
+#     -t <your-ecr-repo>/rigguard-frontend:latest ./frontend
+#
+# The ALB ingress below routes /api/* → api and /predictions/* → prediction,
+# so both build args should point to the same ALB hostname.
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rigguard-frontend
+  namespace: rigguard
+  labels:
+    app: rigguard-frontend
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rigguard-frontend
+  template:
+    metadata:
+      labels:
+        app: rigguard-frontend
+    spec:
+      containers:
+        - name: frontend
+          image: <your-ecr-repo>/rigguard-frontend:latest
+          ports:
+            - containerPort: 80
+          livenessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 10
+            periodSeconds: 30
+            timeoutSeconds: 5
+          readinessProbe:
+            httpGet:
+              path: /
+              port: 80
+            initialDelaySeconds: 5
+            periodSeconds: 10
+            timeoutSeconds: 3
+          resources:
+            requests:
+              cpu: "100m"
+              memory: "128Mi"
+            limits:
+              cpu: "250m"
+              memory: "256Mi"
+      restartPolicy: Always

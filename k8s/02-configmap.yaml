@@ -1,0 +1,13 @@
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: rigguard-config
+  namespace: rigguard
+data:
+  NODE_ENV: "production"
+  DB_PORT: "3306"
+  DB_NAME: "rigguard"
+  DB_USER: "admin"
+  DB_SSL: "true"
+  PORT: "3001"
+  PREDICTION_SERVICE_URL: "http://rigguard-prediction:8000"

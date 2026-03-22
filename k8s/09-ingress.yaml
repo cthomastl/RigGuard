@@ -1,0 +1,50 @@
+# Requires AWS Load Balancer Controller installed in your EKS cluster.
+# Install: https://kubernetes-sigs.github.io/aws-load-balancer-controller/
+#
+# Path routing:
+#   /api/*          → rigguard-api:3001
+#   /predictions/*  → rigguard-prediction:8000
+#   /*              → rigguard-frontend:80
+apiVersion: networking.k8s.io/v1
+kind: Ingress
+metadata:
+  name: rigguard-ingress
+  namespace: rigguard
+  annotations:
+    kubernetes.io/ingress.class: alb
+    alb.ingress.kubernetes.io/scheme: internet-facing
+    alb.ingress.kubernetes.io/target-type: ip
+    alb.ingress.kubernetes.io/listen-ports: '[{"HTTP": 80}, {"HTTPS": 443}]'
+    alb.ingress.kubernetes.io/ssl-redirect: "443"
+    # Replace with your ACM certificate ARN for HTTPS
+    alb.ingress.kubernetes.io/certificate-arn: <your-acm-certificate-arn>
+    alb.ingress.kubernetes.io/healthcheck-interval-seconds: "30"
+    alb.ingress.kubernetes.io/healthcheck-timeout-seconds: "10"
+    alb.ingress.kubernetes.io/healthy-threshold-count: "2"
+    alb.ingress.kubernetes.io/unhealthy-threshold-count: "3"
+spec:
+  rules:
+    - host: <your-alb-hostname-or-custom-domain>
+      http:
+        paths:
+          - path: /api
+            pathType: Prefix
+            backend:
+              service:
+                name: rigguard-api
+                port:
+                  number: 3001
+          - path: /predictions
+            pathType: Prefix
+            backend:
+              service:
+                name: rigguard-prediction
+                port:
+                  number: 8000
+          - path: /
+            pathType: Prefix
+            backend:
+              service:
+                name: rigguard-frontend
+                port:
+                  number: 80

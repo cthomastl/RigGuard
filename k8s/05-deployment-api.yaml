@@ -1,0 +1,64 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: rigguard-api
+  namespace: rigguard
+  labels:
+    app: rigguard-api
+spec:
+  replicas: 2
+  selector:
+    matchLabels:
+      app: rigguard-api
+  template:
+    metadata:
+      labels:
+        app: rigguard-api
+    spec:
+      containers:
+        - name: api
+          image: <your-ecr-repo>/rigguard-api:latest
+          ports:
+            - containerPort: 3001
+          envFrom:
+            - configMapRef:
+                name: rigguard-config
+          env:
+            - name: DB_HOST
+              valueFrom:
+                secretKeyRef:
+                  name: rigguard-secret
+                  key: DB_HOST
+            - name: DB_PASSWORD
+              valueFrom:
+                secretKeyRef:
+                  name: rigguard-secret
+                  key: DB_PASSWORD
+            - name: JWT_SECRET
+              valueFrom:
+                secretKeyRef:
+                  name: rigguard-secret
+                  key: JWT_SECRET
+          livenessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 20
+            periodSeconds: 30
+            timeoutSeconds: 10
+            failureThreshold: 3
+          readinessProbe:
+            httpGet:
+              path: /health
+              port: 3001
+            initialDelaySeconds: 10
+            periodSeconds: 15
+            timeoutSeconds: 5
+          resources:
+            requests:
+              cpu: "250m"
+              memory: "256Mi"
+            limits:
+              cpu: "500m"
+              memory: "512Mi"
+      restartPolicy: Always
