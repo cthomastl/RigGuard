@@ -1,6 +1,20 @@
 # RigGuard — Oil & Gas Predictive Maintenance Platform
 
-Full-stack web application for predictive maintenance and inspection workflow management in oil & gas operations.
+RigGuard is a cloud‑native, production‑ready predictive maintenance platform for oil & gas operations, designed using AWS managed services, containerization, and stateless microservices. The system runs fully on Amazon ECS with AWS Fargate, fronted by an Application Load Balancer (ALB) and backed by Amazon RDS (MySQL).
+This architecture demonstrates modern cloud engineering principles: elastic scaling, managed infrastructure, fault isolation, secure networking, and CI/CD‑ready design.
+
+
+Service	Purpose	
+Amazon ECS (Fargate):	Serverless container orchestration	
+Application Load Balancer:	Traffic routing, health checks	
+Amazon RDS (MySQL):	Managed relational database	
+Amazon ECR:	Container image registry	
+Amazon VPC:	Network isolation	
+IAM Roles: for Tasks	Secure service access	
+CloudWatch: Logs	Centralized logging	
+Auto Scaling:	Scale tasks based on load	
+
+
 
 ## Architecture
 
