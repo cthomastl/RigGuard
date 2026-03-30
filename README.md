@@ -14,6 +14,9 @@ IAM Roles: for Tasks	Secure service access
 CloudWatch: Logs	Centralized logging	
 Auto Scaling:	Scale tasks based on load	
 
+<img width="1536" height="1024" alt="image" src="https://github.com/user-attachments/assets/5b1429cc-6b94-44e7-8fbf-6082cb6ffa2d" />
+
+
 
 
 ## Architecture
