@@ -2,10 +2,9 @@ version: 0.2
 
 # ──────────────────────────────────────────────────────────────────────────────
 # RigGuard – AWS CodeBuild specification
-#
 # Required CodeBuild environment variables (set in the project console or via
 # CloudFormation/Terraform):
-#
+
 #   AWS_ACCOUNT_ID      – your 12-digit AWS account ID
 #   AWS_DEFAULT_REGION  – e.g. us-east-1
 #   ECR_REPO_API        – ECR repository name for the API service
@@ -26,9 +25,8 @@ version: 0.2
 env:
   variables:
     # Defaults – override in the CodeBuild project settings
-    ECR_REPO_API: rigguard-api
-    ECR_REPO_PREDICTION: rigguard-prediction
-    ECR_REPO_FRONTEND: rigguard-frontend
+    ECR_REPO_API: rig-guard-api
+    ECR_REPO_PREDICTION: rig-guard-prediction
 
 phases:
   pre_build:
@@ -45,7 +43,7 @@ phases:
       # Construct full image URIs
       - API_IMAGE="${ECR_REGISTRY}/${ECR_REPO_API}"
       - PRED_IMAGE="${ECR_REGISTRY}/${ECR_REPO_PREDICTION}"
-      - FE_IMAGE="${ECR_REGISTRY}/${ECR_REPO_FRONTEND}"
+
 
   build:
     commands:
@@ -105,9 +103,9 @@ phases:
       - |
         cat > imagedefinitions.json <<EOF
         [
-          {"name":"rigguard-api",        "imageUri":"${API_IMAGE}:${IMAGE_TAG}"},
-          {"name":"rigguard-prediction", "imageUri":"${PRED_IMAGE}:${IMAGE_TAG}"},
-          {"name":"rigguard-frontend",   "imageUri":"${FE_IMAGE}:${IMAGE_TAG}"}
+          {"name":"rig-guard-api",        "imageUri":"${API_IMAGE}:${IMAGE_TAG}"},
+          {"name":"rig-guard-prediction", "imageUri":"${PRED_IMAGE}:${IMAGE_TAG}"},
+          {"name":"rig-guard-frontend",   "imageUri":"${FE_IMAGE}:${IMAGE_TAG}"}
         ]
         EOF
       - cat imagedefinitions.json

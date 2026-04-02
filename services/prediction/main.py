@@ -300,7 +300,9 @@ async def predict_equipment_failure(equipment_id: int, days_ahead: int = 30):
     except Exception as e:
         raise HTTPException(status_code=500, detail=str(e))
 
-
+@app.get("/")
+def read_root():
+    return {"status": "healthy", "service": "prediction-engine"}
 # ─── Maintenance Schedule Optimizer ──────────────────────────────────────────
 @app.get("/predict/maintenance-schedule/{equipment_id}")
 async def optimize_maintenance_schedule(equipment_id: int):

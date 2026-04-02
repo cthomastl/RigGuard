@@ -16,12 +16,29 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 3001;
 
-app.use(cors({ origin: "*", methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], allowedHeaders: ["Content-Type", "Authorization"] }));
+// 1. Explicit CORS (Replace the "*" with your S3 URL)
+app.use(cors({ 
+  origin: [
+    "http://rig-guard-ui-ct-2026.s3-website.us-east-2.amazonaws.com", // Added comma
+    "http://rig-guard-test-ui-2026.s3-website.us-east-2.amazonaws.com", // Added comma
+    "http://localhost:5173" 
+  ], 
+  methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], 
+  allowedHeaders: ["Content-Type", "Authorization"],
+  credentials: true 
+}));
+
 app.use(morgan("combined"));
 app.use(express.json());
 
+// 2. The "AWS Life Saver" Route
+// This ensures ECS sees a 200 OK when it pings the root
+app.get("/", (_req, res) => res.status(200).send("RigGuard API Root - Healthy"));
+
+// Keep your existing /health route too
 app.get("/health", (_req, res) => res.json({ status: "ok", service: "rigguard-api", timestamp: new Date().toISOString() }));
 
+// ... rest of your routes
 app.use("/api/auth", authRouter);
 app.use("/api/equipment", equipmentRouter);
 app.use("/api/sensors", sensorsRouter);
