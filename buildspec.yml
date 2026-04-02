@@ -32,9 +32,10 @@ phases:
   pre_build:
     commands:
       - echo "=== Logging in to Amazon ECR ==="
+       - AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      
       - ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
-      - aws ecr get-login-password --region "$AWS_DEFAULT_REGION" |
-          docker login --username AWS --password-stdin "$ECR_REGISTRY"
+      - aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
 
       # Derive a short commit SHA tag for traceability
       - IMAGE_TAG="${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}"
