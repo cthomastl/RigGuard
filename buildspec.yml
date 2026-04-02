@@ -93,7 +93,7 @@ phases:
         cat > imagedefinitions.json <<EOF
         [
           {"name":"rig-guard-api",        "imageUri":"${API_IMAGE}:${IMAGE_TAG}"},
-          {"name":"rig-guard-prediction", "imageUri":"${PRED_IMAGE}:${IMAGE_TAG}"},
+          {"name":"rig-guard-prediction", "imageUri":"${PRED_IMAGE}:${IMAGE_TAG}"}
         ]
         EOF
       - cat imagedefinitions.json
