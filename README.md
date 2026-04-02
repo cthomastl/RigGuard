@@ -25,9 +25,9 @@ Auto Scaling:	Scale tasks based on load
 
 
 ## Architecture
+<img width="956" height="451" alt="image" src="https://github.com/user-attachments/assets/b1672aa4-95e1-43c9-a884-9f12e116fba7" />
 
 ```
-<img width="956" height="451" alt="image" src="https://github.com/user-attachments/assets/eda812a8-6639-4cdc-b039-dc29d47fb8f6" />
 
 ## Services
 
