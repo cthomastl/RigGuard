@@ -27,18 +27,7 @@ Auto Scaling:	Scale tasks based on load
 ## Architecture
 
 ```
-┌─────────────────┐     ┌──────────────────┐     ┌───────────────────┐
-│   React Frontend │────▶│  Node.js API     │────▶│   AWS RDS MySQL   │
-│   (Vite + TS)   │     │  (Express + ORM) │     │                   │
-│   Port 80       │     │  Port 3001       │     │                   │
-└─────────────────┘     └──────────────────┘     └───────────────────┘
-                              │
-                         ┌────▼─────────────┐
-                         │ Python Prediction │
-                         │ Service (FastAPI) │
-                         │ Port 8000         │
-                         └──────────────────┘
-```
+<img width="956" height="451" alt="image" src="https://github.com/user-attachments/assets/eda812a8-6639-4cdc-b039-dc29d47fb8f6" />
 
 ## Services
 
