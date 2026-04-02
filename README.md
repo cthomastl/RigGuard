@@ -17,6 +17,10 @@ Auto Scaling:	Scale tasks based on load
 <img width="1536" height="854" alt="Designer" src="https://github.com/user-attachments/assets/dc40842b-5d67-4526-a678-076e72715a07" />
 
 
+<img width="731" height="275" alt="image" src="https://github.com/user-attachments/assets/93b77a2a-c816-490c-85d2-99d7deef487e" />
+
+
+
 
 
 
