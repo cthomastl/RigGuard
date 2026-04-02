@@ -21,7 +21,7 @@ app.use(cors({
   origin: [
     "http://rig-guard-ui-ct-2026.s3-website.us-east-2.amazonaws.com", // Added comma
     "http://rig-guard-test-ui-2026.s3-website.us-east-2.amazonaws.com", // Added comma
-    "http://localhost:5173" 
+    "http://localhost:5174"
   ], 
   methods: ["GET", "POST", "PUT", "DELETE", "PATCH"], 
   allowedHeaders: ["Content-Type", "Authorization"],
