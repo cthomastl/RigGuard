@@ -61,16 +61,6 @@ phases:
           -t "${PRED_IMAGE}:${IMAGE_TAG}"
           -t "${PRED_IMAGE}:latest"
           ./services/prediction
-
-      # ── Frontend ───────────────────────────────────────────────────────────
-      - echo "=== Building Frontend ==="
-      - docker build
-          --build-arg "VITE_API_URL=${VITE_API_URL}"
-          --build-arg "VITE_PREDICTION_URL=${VITE_PREDICTION_URL}"
-          -t "${FE_IMAGE}:${IMAGE_TAG}"
-          -t "${FE_IMAGE}:latest"
-          ./frontend
-
   post_build:
     commands:
       # ── Push all images ────────────────────────────────────────────────────
@@ -79,8 +69,6 @@ phases:
       - docker push "${API_IMAGE}:latest"
       - docker push "${PRED_IMAGE}:${IMAGE_TAG}"
       - docker push "${PRED_IMAGE}:latest"
-      - docker push "${FE_IMAGE}:${IMAGE_TAG}"
-      - docker push "${FE_IMAGE}:latest"
 
       # ── (Optional) Rolling ECS redeploy ───────────────────────────────────
       # Uncomment the block below after your ECS services exist.
@@ -106,7 +94,6 @@ phases:
         [
           {"name":"rig-guard-api",        "imageUri":"${API_IMAGE}:${IMAGE_TAG}"},
           {"name":"rig-guard-prediction", "imageUri":"${PRED_IMAGE}:${IMAGE_TAG}"},
-          {"name":"rig-guard-frontend",   "imageUri":"${FE_IMAGE}:${IMAGE_TAG}"}
         ]
         EOF
       - cat imagedefinitions.json
