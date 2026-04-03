@@ -33,7 +33,7 @@ app.use(express.json());
 
 // 2. The "AWS Life Saver" Route
 // This ensures ECS sees a 200 OK when it pings the root
-app.get("/", (_req, res) => res.status(200).send("RigGuard API Root - Healthy"));
+app.get("/", (_req, res) => res.status(200).send("RigGuard API Root - Healthy!"));
 
 // Keep your existing /health route too
 app.get("/health", (_req, res) => res.json({ status: "ok", service: "rigguard-api", timestamp: new Date().toISOString() }));
