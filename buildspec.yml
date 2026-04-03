@@ -1,0 +1,108 @@
+version: 0.2
+
+# ──────────────────────────────────────────────────────────────────────────────
+# RigGuard – AWS CodeBuild specification
+# Required CodeBuild environment variables (set in the project console or via
+# CloudFormation/Terraform):
+
+#   AWS_ACCOUNT_ID      – your 12-digit AWS account ID
+#   AWS_DEFAULT_REGION  – e.g. us-east-1
+#   ECR_REPO_API        – ECR repository name for the API service
+#   ECR_REPO_PREDICTION – ECR repository name for the prediction service
+#   ECR_REPO_FRONTEND   – ECR repository name for the frontend
+#
+# Optional – only needed if you want CodeBuild to redeploy ECS services:
+#   ECS_CLUSTER         – ECS cluster name
+#   ECS_SERVICE_API     – ECS service name for the API
+#   ECS_SERVICE_PRED    – ECS service name for the prediction service
+#   ECS_SERVICE_FE      – ECS service name for the frontend
+#
+# Build args forwarded to the frontend Docker build:
+#   VITE_API_URL        – public URL of the API (e.g. https://api.example.com)
+#   VITE_PREDICTION_URL – public URL of the prediction service
+# ──────────────────────────────────────────────────────────────────────────────
+
+env:
+  variables:
+    # Defaults – override in the CodeBuild project settings
+    ECR_REPO_API: rig-guard-api
+    ECR_REPO_PREDICTION: rig-guard-prediction
+
+phases:
+  pre_build:
+    commands:
+      - echo "=== Logging in to Amazon ECR ==="
+      - export AWS_ACCOUNT_ID=$(aws sts get-caller-identity --query Account --output text)
+      - echo "Account ID is $AWS_ACCOUNT_ID"
+      - export ECR_REGISTRY="${AWS_ACCOUNT_ID}.dkr.ecr.${AWS_DEFAULT_REGION}.amazonaws.com"
+      - aws ecr get-login-password --region "$AWS_DEFAULT_REGION" | docker login --username AWS --password-stdin "$ECR_REGISTRY"
+
+      # Derive a short commit SHA tag for traceability
+      - IMAGE_TAG="${CODEBUILD_RESOLVED_SOURCE_VERSION:0:8}"
+      - echo "Image tag -> $IMAGE_TAG"
+
+      # Construct full image URIs
+      - API_IMAGE="${ECR_REGISTRY}/${ECR_REPO_API}"
+      - PRED_IMAGE="${ECR_REGISTRY}/${ECR_REPO_PREDICTION}"
+
+
+  build:
+    commands:
+      # ── API service ────────────────────────────────────────────────────────
+      - echo "=== Building API service ==="
+      - docker build
+          -t "${API_IMAGE}:${IMAGE_TAG}"
+          -t "${API_IMAGE}:latest"
+          ./services/api
+
+      # ── Prediction service ─────────────────────────────────────────────────
+      - echo "=== Building Prediction service ==="
+      - docker build
+          -t "${PRED_IMAGE}:${IMAGE_TAG}"
+          -t "${PRED_IMAGE}:latest"
+          ./services/prediction
+  post_build:
+    commands:
+      # ── Push all images ────────────────────────────────────────────────────
+      - echo "=== Pushing images to ECR ==="
+      - docker push "${API_IMAGE}:${IMAGE_TAG}"
+      - docker push "${API_IMAGE}:latest"
+      - docker push "${PRED_IMAGE}:${IMAGE_TAG}"
+      - docker push "${PRED_IMAGE}:latest"
+
+      # ── (Optional) Rolling ECS redeploy ───────────────────────────────────
+      # Uncomment the block below after your ECS services exist.
+      # The IAM role attached to the CodeBuild project must have
+      # ecs:UpdateService permission on these services.
+      #
+      # - |
+      #   if [ -n "$ECS_CLUSTER" ]; then
+      #     echo "=== Redeploying ECS services ==="
+      #     aws ecs update-service --cluster "$ECS_CLUSTER" \
+      #       --service "$ECS_SERVICE_API"  --force-new-deployment
+      #     aws ecs update-service --cluster "$ECS_CLUSTER" \
+      #       --service "$ECS_SERVICE_PRED" --force-new-deployment
+      #     aws ecs update-service --cluster "$ECS_CLUSTER" \
+      #       --service "$ECS_SERVICE_FE"   --force-new-deployment
+      #   fi
+
+      # ── Write imagedefinitions.json for CodePipeline (ECS deploy action) ──
+      # CodePipeline's ECS deploy action reads this file from the build artifact.
+      - echo "=== Writing imagedefinitions.json ==="
+      - |
+        cat > imagedefinitions.json <<EOF
+        [
+          {"name":"rig_guard_api",        "imageUri":"${API_IMAGE}:${IMAGE_TAG}"},
+          {"name":"rig_guard_prediction", "imageUri":"${PRED_IMAGE}:${IMAGE_TAG}"}
+        ]
+        EOF
+      - cat imagedefinitions.json
+
+artifacts:
+  files:
+    - imagedefinitions.json
+
+cache:
+  paths:
+    # Cache pip packages between builds
+    - /root/.cache/pip/**/*

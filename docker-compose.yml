@@ -49,23 +49,6 @@ services:
       interval: 30s
       timeout: 10s
       retries: 3
-
-  frontend:
-    build:
-      context: ./frontend
-      dockerfile: Dockerfile
-      args:
-        VITE_API_URL: ${VITE_API_URL:-http://localhost:3001}
-        VITE_PREDICTION_URL: ${VITE_PREDICTION_URL:-http://localhost:8000}
-    container_name: rigguard-frontend
-    ports:
-      - "80:80"
-    depends_on:
-      - api
-    restart: unless-stopped
-    networks:
-      - rigguard-net
-
 networks:
   rigguard-net:
     driver: bridge
