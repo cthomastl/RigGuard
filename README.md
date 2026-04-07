@@ -31,7 +31,7 @@ Auto Scaling:	Scale tasks based on load
 
 ## Services
 
-### Frontend (React + TypeScript + Tailwind)
+### Frontend (React + TypeScript + Tailwind) Hosted on S3 with Cloud Front. Route 53 for DNS 
 - Dashboard with fleet health score & KPIs
 - Equipment registry with real-time sensor charts
 - Alert management (acknowledge/resolve workflow)
@@ -40,17 +40,21 @@ Auto Scaling:	Scale tasks based on load
 - AI predictions (RUL, anomaly scores per equipment)
 - User management
 
-### API Service (Node.js + Express + Sequelize)
+### API Service (Node.js + Express + Sequelize) ECS Fargate
 - REST API with JWT authentication
 - Equipment, Sensors, Alerts, Inspections, Work Orders, Users
 - Auto-syncs Sequelize models to MySQL on startup
 - Threshold-based alert generation on sensor ingestion
 
-### Prediction Service (Python + FastAPI + scikit-learn)
+### Prediction Service (Python + FastAPI + scikit-learn) ECS Fargate
 - Isolation Forest anomaly detection
 - Remaining Useful Life (RUL) estimation
 - Composite risk scoring per equipment
 - Maintenance schedule optimization
+
+CI/CD - Codepipeline
+
+DB - Amazon RDS 
 
 ## Quick Start
 
