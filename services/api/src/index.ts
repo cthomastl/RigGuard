@@ -37,6 +37,7 @@ app.get("/", (_req, res) => res.status(200).send("RigGuard API Root - Healthy!")
 
 // Keep your existing /health route too
 app.get("/health", (_req, res) => res.json({ status: "ok", service: "rigguard-api", timestamp: new Date().toISOString() }));
+app.get("/api/health", (_req, res) => res.json({ status: "ok", service: "rigguard-api", timestamp: new Date().toISOString() }));
 
 // ... rest of your routes
 app.use("/api/auth", authRouter);
