@@ -23,7 +23,7 @@ spec:
                 name: rigguard-api
                 port:
                   number: 3001
-          - path: /predictions
+          - path: /predict
             pathType: Prefix
             backend:
               service:
