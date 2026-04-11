@@ -17,7 +17,7 @@ spec:
     spec:
       containers:
         - name: prediction
-          image: <your-ecr-repo>/rigguard-prediction:latest
+          image: 985109047533.dkr.ecr.us-east-2.amazonaws.com/rig-guard-prediction:latest
           ports:
             - containerPort: 8000
           env:
