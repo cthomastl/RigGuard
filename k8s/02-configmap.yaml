@@ -6,7 +6,7 @@ metadata:
 data:
   NODE_ENV: "production"
   DB_PORT: "3306"
-  DB_NAME: "rigguard"
+  DB_NAME: "rigguard_test_db"
   DB_USER: "admin_user"
   DB_SSL: "true"
   PORT: "3001"
