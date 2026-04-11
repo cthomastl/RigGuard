@@ -8,6 +8,7 @@ from datetime import datetime, timedelta
 from typing import List, Optional
 import numpy as np
 from fastapi import FastAPI, HTTPException
+from fastapi.middleware.cors import CORSMiddleware
 from pydantic import BaseModel
 from sklearn.ensemble import IsolationForest
 from sklearn.preprocessing import StandardScaler
@@ -18,6 +19,20 @@ from dotenv import load_dotenv
 load_dotenv()
 
 app = FastAPI(title="RigGuard Prediction Service", version="1.0.0")
+
+app.add_middleware(
+    CORSMiddleware,
+    allow_origins=[
+        "http://localhost:5174",
+        "http://localhost:5173",
+        "http://localhost:3000",
+        "http://rig-guard-ui-ct-2026.s3-website.us-east-2.amazonaws.com",
+        "http://rig-guard-test-ui-2026.s3-website.us-east-2.amazonaws.com",
+    ],
+    allow_credentials=True,
+    allow_methods=["*"],
+    allow_headers=["*"],
+)
 
 # DB connection (read-only for analytics)
 DB_HOST = os.getenv("DB_HOST", "localhost")
