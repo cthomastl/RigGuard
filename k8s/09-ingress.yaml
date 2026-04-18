@@ -13,6 +13,7 @@ metadata:
     kubernetes.io/ingress.class: nginx
     nginx.ingress.kubernetes.io/use-regex: "true"
 spec:
+  ingressClassName: nginx
   rules:
     - http:
         paths:
@@ -30,10 +31,3 @@ spec:
                 name: rigguard-prediction
                 port:
                   number: 8000
-          - path: /
-            pathType: Prefix
-            backend:
-              service:
-                name: rigguard-frontend
-                port:
-                  number: 80
