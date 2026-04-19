@@ -1,8 +1,8 @@
-node_modules/
-dist/
+
+.terraform/
+terraform.tfstate
+terraform.tfstate*
+*.tfstate.d
 .env
-*.local
-__pycache__/
-*.pyc
-.DS_Store
-*.log
+
+.terraform/
