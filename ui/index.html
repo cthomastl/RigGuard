@@ -1,0 +1,26 @@
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <link rel="icon" type="image/svg+xml" href="/icon.svg" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>RigGuard — Predictive Maintenance Platform</title>
+  </head>
+  <body>
+    <title>%VITE_APP_TITLE%</title>
+  </head>
+  <body>
+    <div id="root"></div>
+    <script type="module" src="/src/main.tsx"></script>
+
+    <script>
+      if ("%VITE_USER_NODE_ENV%" === "test") {
+        const devBanner = document.createElement('div');
+        devBanner.innerText = "DEV ENVIRONMENT";
+        devBanner.style = "background: #facc15; color: black; text-align: center; font-weight: bold; font-size: 12px; position: fixed; top: 0; width: 100%; z-index: 9999;";
+        document.body.prepend(devBanner);
+      }
+    </script>
+  </body>
+  </body>
+</html>
