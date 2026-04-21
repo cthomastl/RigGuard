@@ -1,0 +1,67 @@
+name: Deploy Backend to EKS
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - 'services/**'
+
+env:
+  AWS_REGION: us-east-2
+  ECR_REGISTRY: 985109047533.dkr.ecr.us-east-2.amazonaws.com
+  EKS_CLUSTER: rigguard-cluster
+  K8S_NAMESPACE: rigguard
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Configure AWS credentials
+        uses: aws-actions/configure-aws-credentials@v4
+        with:
+          aws-access-key-id: ${{ secrets.AWS_ACCESS_KEY_ID }}
+          aws-secret-access-key: ${{ secrets.AWS_SECRET_ACCESS_KEY }}
+          aws-region: ${{ env.AWS_REGION }}
+
+      - name: Login to Amazon ECR
+        uses: aws-actions/amazon-ecr-login@v2
+
+      - name: Build and push API image
+        env:
+          IMAGE: ${{ env.ECR_REGISTRY }}/rig-guard-api
+          SHA: ${{ github.sha }}
+        run: |
+          docker build -t $IMAGE:$SHA -t $IMAGE:latest ./services/services/api
+          docker push $IMAGE:$SHA
+          docker push $IMAGE:latest
+
+      - name: Build and push Prediction image
+        env:
+          IMAGE: ${{ env.ECR_REGISTRY }}/rig-guard-prediction
+          SHA: ${{ github.sha }}
+        run: |
+          docker build -t $IMAGE:$SHA -t $IMAGE:latest ./services/services/prediction
+          docker push $IMAGE:$SHA
+          docker push $IMAGE:latest
+
+      - name: Update kubeconfig
+        run: |
+          aws eks update-kubeconfig --region ${{ env.AWS_REGION }} --name ${{ env.EKS_CLUSTER }}
+
+      - name: Deploy to EKS
+        env:
+          SHA: ${{ github.sha }}
+        run: |
+          kubectl set image deployment/rigguard-api \
+            api=${{ env.ECR_REGISTRY }}/rig-guard-api:$SHA \
+            -n ${{ env.K8S_NAMESPACE }}
+
+          kubectl set image deployment/rigguard-prediction \
+            prediction=${{ env.ECR_REGISTRY }}/rig-guard-prediction:$SHA \
+            -n ${{ env.K8S_NAMESPACE }}
+
+          kubectl rollout status deployment/rigguard-api -n ${{ env.K8S_NAMESPACE }}
+          kubectl rollout status deployment/rigguard-prediction -n ${{ env.K8S_NAMESPACE }}
